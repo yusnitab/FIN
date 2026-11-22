@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fin Creative - Company Credentials</title>
+<style>
+  :root{
+    --blue:#1a07a8;
+    --blue-dark:#0b0470;
+    --blue-light:#dfe9fb;
+    --white:#ffffff;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%;overflow:hidden;font-family:"Trebuchet MS","Segoe UI",Arial,sans-serif;background:var(--blue-dark);color:var(--blue)}
+
+  /* ---------- NAV ---------- */
+  .topbar{position:fixed;top:0;left:0;right:0;z-index:50;display:flex;justify-content:space-between;align-items:center;padding:14px 28px}
+  .brand{font-weight:900;letter-spacing:1px;font-size:14px}
+  .menu{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+  .menu button{background:transparent;border:1.5px solid currentColor;color:inherit;padding:6px 12px;border-radius:30px;font-size:12px;font-weight:700;letter-spacing:.5px;cursor:pointer;text-transform:uppercase;transition:.2s}
+  .menu button:hover{background:currentColor}
+  .menu button:hover span{color:#fff;mix-blend-mode:normal}
+  .menu button.active{background:var(--blue);color:#fff;border-color:var(--blue)}
+  body.dark-slide .topbar{color:#fff}
+  body.dark-slide .menu button.active{background:#fff;color:var(--blue);border-color:#fff}
+  body:not(.dark-slide) .topbar{color:var(--blue)}
+
+  .arrow{position:fixed;top:50%;transform:translateY(-50%);z-index:50;width:52px;height:52px;border-radius:50%;border:2px solid currentColor;background:transparent;color:inherit;font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.2s}
+  .arrow:hover{background:var(--blue);color:#fff}
+  body.dark-slide .arrow{color:#fff}
+  body.dark-slide .arrow:hover{background:#fff;color:var(--blue)}
+  body:not(.dark-slide) .arrow{color:var(--blue)}
+  #prev{left:18px} #next{right:18px}
+  .arrow[disabled]{opacity:.2;pointer-events:none}
+
+  .progress{position:fixed;bottom:0;left:0;height:5px;background:var(--blue);z-index:60;transition:width .4s}
+  body.dark-slide .progress{background:#fff}
+  .counter{position:fixed;bottom:16px;right:28px;z-index:50;font-weight:900;font-size:13px;letter-spacing:2px}
+  body.dark-slide .counter{color:#fff}
+
+  /* ---------- SLIDES ---------- */
+  .stage{position:relative;width:100%;height:100%}
+  .slide{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;padding:90px 100px 70px;opacity:0;visibility:hidden;transform:translateX(40px);transition:opacity .5s, transform .5s, visibility .5s;overflow:auto}
+  .slide.active{opacity:1;visibility:visible;transform:none}
+  .slide.leaving{transform:translateX(-40px)}
+
+  .light{background:
+      radial-gradient(circle at 90% 40%, rgba(80,140,230,.45), transparent 45%),
+      radial-gradient(circle at 100% 100%, rgba(80,140,230,.35), transparent 35%),
+      linear-gradient(120deg,#fff 40%,#e8f0fd);}
+  .light::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.35;
+      background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/><feColorMatrix values='0 0 0 0 .2  0 0 0 0 .4  0 0 0 0 .9  0 0 0 .5 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");}
+  .slide>*{position:relative;z-index:1}
+
+  .dark{background:linear-gradient(135deg,#5a1fe0 0%,#1a07d0 35%,#0b0470 100%);color:#fff}
+  .dark.stripes::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(-35deg,transparent 0 60px,rgba(255,255,255,.05) 60px 64px)}
+
+  .kicker{font-style:italic;font-size:clamp(18px,2.4vw,32px);display:flex;align-items:center;gap:16px;margin-bottom:6px;font-weight:300}
+  .kicker i{display:inline-block;width:clamp(80px,12vw,170px);height:2px;background:currentColor;position:relative}
+  .kicker i::after{content:"";position:absolute;right:0;top:-5px;width:10px;height:10px;border-top:2px solid currentColor;border-right:2px solid currentColor;transform:rotate(45deg)}
+  h1.title{font-size:clamp(38px,6.5vw,92px);font-weight:900;text-transform:uppercase;line-height:1;margin-bottom:36px}
+  .foot{position:absolute !important;left:40px;bottom:18px;font-size:11px;font-weight:900}
+  .foot em{display:block;font-weight:300}
+
+  /* Cover */
+  .logo{font-weight:900;line-height:.8;font-size:clamp(110px,16vw,220px);letter-spacing:-6px}
+  .logo small{display:block;font-size:.12em;letter-spacing:6px;margin-top:10px;margin-left:.45em}
+  .cover{align-items:center;flex-direction:row;gap:40px;justify-content:center}
+  .cover .vbar{width:3px;height:190px;background:#fff}
+  .cover .cc{font-size:clamp(20px,2.4vw,32px);font-weight:300;line-height:1.15}
+
+  /* Heartbeat */
+  .heart{padding:0;flex-direction:column;justify-content:flex-start}
+  .seats{flex:1;display:grid;grid-template-columns:repeat(8,1fr);grid-template-rows:repeat(3,1fr);gap:14px;padding:50px 20px 14px;background:#ccc;filter:grayscale(1)}
+  .seat{background:#f1f1f1;border-radius:20px 20px 8px 8px;display:flex;justify-content:center;padding-top:10px;box-shadow:inset 0 -8px 0 rgba(0,0,0,.08)}
+  .seat b{font-size:10px;background:#111;color:#fff;border-radius:50%;padding:2px 6px;height:fit-content}
+  .seat.blue{background:var(--blue);filter:none}
+  .heart-bottom{flex:1;display:flex}
+  .heart-bottom .l{flex:.9;background:#c9c9c9;display:flex;align-items:center;justify-content:center;color:var(--blue)}
+  .heart-bottom .l .logo{font-size:clamp(70px,9vw,130px)}
+  .heart-bottom .r{flex:1.6;background:var(--blue);color:#e9e9e9;display:flex;align-items:center;justify-content:space-between;padding:0 6%}
+  .heart-bottom .r h2{font-size:clamp(22px,3.2vw,46px);font-weight:900;line-height:1.1}
+  .heart-bottom .r h2 span{display:block;font-size:.65em}
+  .heart-bottom .r .arr{font-size:clamp(60px,8vw,120px);font-weight:900}
+
+  /* Intro */
+  .intro-wrap{display:flex;gap:60px;align-items:center}
+  .photo{flex:0 0 min(32vw,420px);aspect-ratio:1;background:radial-gradient(circle at 40% 50%,#e7c8ff 0,#4a24d8 14%,#1a0a9a 40%,#0b0470 100%);box-shadow:0 12px 40px rgba(26,7,168,.3)}
+  .intro-wrap p{font-size:clamp(15px,1.55vw,22px);line-height:1.55;margin-bottom:22px;max-width:760px}
+
+  /* Vision Mission – click to reveal */
+  .vm{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:20px}
+  .vm .box{opacity:0;transform:translateY(30px);transition:.6s}
+  .vm .box.show{opacity:1;transform:none}
+  .vm .tag{background:var(--blue);color:#fff;display:inline-block;padding:14px 30px;font-weight:900;font-size:clamp(20px,2.2vw,30px);text-transform:uppercase}
+  .vm .body{background:var(--blue);color:#fff;padding:26px 30px;font-size:clamp(14px,1.45vw,20px);line-height:1.5;min-height:190px}
+  .hint{margin-top:18px;font-size:12px;font-weight:700;letter-spacing:1px;opacity:.6}
+
+  /* Core value */
+  .values{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:150px;gap:16px}
+  .val{position:relative;overflow:hidden;background:linear-gradient(135deg,#bbb,#eee);cursor:pointer;opacity:0;transform:scale(.9);transition:.5s}
+  .val.show{opacity:1;transform:none}
+  .val::after{content:attr(data-name);position:absolute;left:0;right:0;bottom:0;background:var(--blue);color:#fff;padding:12px 16px;font-weight:900;font-size:clamp(14px,1.6vw,22px);text-transform:uppercase}
+  .val .desc{position:absolute;inset:0;padding:14px;font-size:13px;color:var(--blue);font-weight:700;background:rgba(255,255,255,.9);opacity:0;transition:.3s}
+  .val:hover .desc{opacity:1}
+  .val.big{grid-column:span 2;grid-row:span 2}
+  .v1{background:linear-gradient(135deg,#9a9a9a,#e6e6e6)} .v2{background:linear-gradient(135deg,#777,#ddd)}
+  .v3{background:linear-gradient(135deg,#555,#ccc)} .v4{background:linear-gradient(135deg,#888,#eee)}
+  .v5{background:linear-gradient(135deg,#444,#bbb)}
+
+  /* Services */
+  .services{display:flex;gap:90px;flex-wrap:wrap}
+  .services h3{font-size:clamp(22px,2.6vw,36px);font-weight:900;text-transform:uppercase;margin-bottom:18px}
+  .services li{list-style:none;font-size:clamp(16px,1.9vw,26px);margin-bottom:12px;padding-left:22px;position:relative;opacity:0;transform:translateX(-20px);transition:.4s}
+  .services li::before{content:"•";position:absolute;left:0}
+  .services li.show{opacity:1;transform:none}
+
+  /* Selected Project divider */
+  .divider{justify-content:flex-end;padding-bottom:90px}
+  .divider h1{font-size:clamp(50px,9vw,130px);font-weight:900;color:#a58cf0;line-height:1.05;text-transform:uppercase}
+  .divider .arr{position:absolute !important;right:80px;bottom:60px;font-size:clamp(80px,10vw,150px);font-weight:900;color:#a58cf0}
+
+  /* Project slides */
+  .project{padding:70px 40px 40px}
+  .proj-grid{display:grid;grid-template-columns:1fr 330px;grid-template-rows:1fr auto;gap:16px;height:100%}
+  .proj-main{background:#999;overflow:hidden;position:relative;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:900;font-size:clamp(18px,2.4vw,34px);text-align:center;padding:20px}
+  .proj-main img,.proj-thumbs img{width:100%;height:100%;object-fit:cover;display:block}
+  .proj-info{background:var(--blue);color:#fff;padding:24px;display:flex;flex-direction:column;justify-content:flex-end;grid-row:1;grid-column:2}
+  .proj-info small{font-size:12px;letter-spacing:1px;font-weight:300;display:block}
+  .proj-info h2{font-size:clamp(14px,1.6vw,22px);text-transform:uppercase;font-weight:900;margin:2px 0 14px}
+  .proj-info .size{font-weight:300;margin-bottom:14px;font-size:clamp(12px,1.3vw,18px)}
+  .attention{background:#fff;color:var(--blue);padding:14px 18px;font-size:11.5px;font-weight:900;line-height:1.35;grid-column:2;grid-row:2}
+  .proj-thumbs{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;grid-column:1;grid-row:2;height:130px}
+  .proj-thumbs div{background:#aaa;overflow:hidden}
+  .bg1{background:linear-gradient(135deg,#2b1a12,#8a5a3a)} .bg2{background:linear-gradient(135deg,#d8c6a8,#fff)}
+  .bg3{background:linear-gradient(135deg,#bbb,#eee)} .bg4{background:linear-gradient(135deg,#d6c3a0,#2a2a2a)}
+  .bg5{background:linear-gradient(135deg,#444,#aaa)} .bg6{background:linear-gradient(135deg,#00a2e8,#fff)}
+  .bg7{background:linear-gradient(135deg,#f6e100,#2e9e3f)} .bg8{background:linear-gradient(135deg,#111,#d9a800)}
+  .bg9{background:linear-gradient(135deg,#b00,#400)} .bg10{background:linear-gradient(135deg,#0c3ca5,#fff)}
+  .bg11{background:linear-gradient(135deg,#8bc34a,#fff)} .bg12{background:linear-gradient(135deg,#ff8a1f,#fff)}
+  .bg13{background:linear-gradient(135deg,#4caf50,#fff)} .bg14{background:linear-gradient(135deg,#b01212,#e9c46a)}
+
+  /* Contact */
+  .contact{padding:0;flex-direction:row}
+  .contact .l{flex:.9;background:#c9c9c9;display:flex;align-items:center;justify-content:center;color:var(--blue)}
+  .contact .r{flex:1.6;background:var(--blue);color:#fff;padding:0 8%;display:flex;flex-direction:column;justify-content:center;gap:22px}
+  .contact h2{font-size:clamp(22px,2.6vw,34px);font-weight:900;margin-bottom:20px}
+  .contact a{display:flex;align-items:center;gap:20px;color:#fff;text-decoration:none;font-size:clamp(18px,2.4vw,32px);font-weight:600}
+  .contact a b{width:54px;height:54px;background:#fff;color:var(--blue);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:24px}
+
+  .fullimg{padding:0;background-size:cover;background-position:center;background-repeat:no-repeat;overflow:hidden}
+  .hot{position:absolute !important;display:block;left:40%;width:36%;z-index:5}
+  .photo{background-size:cover;background-position:center}
+  .values{display:block;position:relative;aspect-ratio:1377/496;width:min(100%,calc((100vh - 330px)*2.776))}
+  .val{position:absolute;background-size:100% 100%;background-repeat:no-repeat}
+  .values .v1{left:0;top:0;width:34.79%;height:41.33%}
+  .values .v2{left:0;top:46.17%;width:34.79%;height:33.06%}
+  .values .v3{left:36.46%;top:0;width:38.42%;height:100%}
+  .values .v4{left:76.62%;top:0;width:14.96%;height:41.33%}
+  .values .v5{left:76.62%;top:46.17%;width:23.38%;height:41.53%}
+  .val{background-size:cover;background-position:center}
+  .val::after{display:none}
+  .proj-main.span{grid-row:1 / 3;background:#fff}
+  .proj-main.span img{object-fit:contain}
+  .fullimg{background-color:#0b0470}
+  @media(max-aspect-ratio:1/1){.fullimg{background-size:contain}}
+  html,body{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+  @media(max-width:800px){
+    .slide{padding:90px 24px 70px}
+    .intro-wrap{flex-direction:column;gap:24px}.photo{flex:none;width:55%}
+    .vm{grid-template-columns:1fr}
+    .proj-main.span{grid-row:auto}
+    .proj-grid{grid-template-columns:1fr;grid-template-rows:auto auto auto auto}.proj-info,.attention{grid-column:1;grid-row:auto}
+    .proj-thumbs{grid-column:1;grid-row:auto;height:80px}
+    .arrow{width:40px;height:40px}.contact{flex-direction:column}
+  }
+</style>
+</head>
+<body class="dark-slide">
+
+<div class="topbar">
+  <div class="brand">FIN CREATIVE</div>
+  <div class="menu" id="menu"></div>
+</div>
+
+<button class="arrow" id="prev" aria-label="Sebelumnya">&#8592;</button>
+<button class="arrow" id="next" aria-label="Berikutnya">&#8594;</button>
+<div class="counter" id="counter"></div>
+<div class="progress" id="progress"></div>
+
+<div class="stage" id="stage">
+
+  <!-- 1. COVER -->
+  <section class="slide fullimg active" data-title="Home" data-dark="1" style="background-image:url(photos/cover.jpg)"></section>
+
+  <!-- 2. HEARTBEAT -->
+  <section class="slide fullimg" data-title="Heartbeat" data-dark="1" style="background-image:url(photos/heartbeat.jpg)"></section>
+
+  <!-- 3. INTRO -->
+  <section class="slide light" data-title="Intro">
+    <div class="kicker">INTRO <i></i></div>
+    <h1 class="title">Who we are?</h1>
+    <div class="intro-wrap">
+      <div class="photo" style="background-image:url(photos/intro.jpg)"></div>
+      <div>
+        <p>We specializes in event planning and production, offering creative and innovative solutions for a wide range of events, from event decoration to conferences. With an experienced team, we handle everything from planning to execution, ensuring seamless and memorable experiences.</p>
+        <p>We also provide production services such as video creation, graphic design, and technical support. Committed to excellence, we help clients bring their vision to life with creativity and the latest technology.</p>
+      </div>
+    </div>
+    <div class="foot">FIN CREATIVE<em>[CREATIVITY IS OUR HEARTBEAT]</em></div>
+  </section>
+
+  <!-- 4. VISION + MISSION (klik untuk muncul satu per satu) -->
+  <section class="slide light" data-title="Vision & Mission" data-steps="2">
+    <div class="kicker">DREAM BIG <i></i></div>
+    <h1 class="title">Vision + Mission</h1>
+    <div class="vm">
+      <div class="box" data-step="1">
+        <div class="tag">Vision</div>
+        <div class="body">To become a leading event planning &amp; production company that creates unforgettable celebration experiences, prioritizing creativity, innovation, and customer satisfaction.</div>
+      </div>
+      <div class="box" data-step="2">
+        <div class="tag">Mission</div>
+        <div class="body">To emphasize creativity and innovation in every detail of the celebration, offering fresh and unique ideas that leave a lasting impression and memorable events that exceed client expectations.</div>
+      </div>
+    </div>
+    <div class="hint">KLIK &rarr; UNTUK MENAMPILKAN</div>
+    <div class="foot">FIN CREATIVE<em>[CREATIVITY IS OUR HEARTBEAT]</em></div>
+  </section>
+
+  <!-- 5. CORE VALUE -->
+  <section class="slide light" data-title="Core Value" data-steps="5">
+    <div class="kicker">AMBITIONS <i></i></div>
+    <h1 class="title" style="margin-bottom:20px">Core Value</h1>
+    <div class="values">
+      <div class="val v1" style="background-image:url(photos/core-quality.jpg)" data-name="Quality" data-step="1"><div class="desc">Hasil kerja berkualitas di setiap detail.</div></div>
+      <div class="val big v3" style="background-image:url(photos/core-creativity.jpg)" data-name="Creativity" data-step="3"><div class="desc">Kreativitas adalah detak jantung kami.</div></div>
+      <div class="val v4" style="background-image:url(photos/core-unique.jpg)" data-name="Unique" data-step="4"><div class="desc">Ide segar dan berbeda.</div></div>
+      <div class="val v2" style="background-image:url(photos/core-innovation.jpg)" data-name="Innovation" data-step="2"><div class="desc">Solusi inovatif dengan teknologi terbaru.</div></div>
+      <div class="val v5" style="background-image:url(photos/core-trustworthy.jpg)" data-name="Trustworthy" data-step="5"><div class="desc">Dapat diandalkan dari perencanaan sampai eksekusi.</div></div>
+    </div>
+    <div class="hint">KLIK &rarr; UNTUK MENAMPILKAN</div>
+    <div class="foot">FIN CREATIVE<em>[CREATIVITY IS OUR HEARTBEAT]</em></div>
+  </section>
+
+  <!-- 6. SERVICES -->
+  <section class="slide light" data-title="Services" data-steps="8">
+    <div class="kicker">MAKE IT HAPPEN <i></i></div>
+    <h1 class="title">Our Services</h1>
+    <div class="services">
+      <div>
+        <h3>Event Planning</h3>
+        <ul>
+          <li data-step="1">Birthday Party</li>
+          <li data-step="2">Office Event Decoration</li>
+          <li data-step="3">Conference Event</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Production</h3>
+        <ul>
+          <li data-step="4">Merchandise</li>
+          <li data-step="5">PR Package</li>
+          <li data-step="6">POSM</li>
+          <li data-step="7">Booth Installation</li>
+          <li data-step="8">Interior Design &amp; Production</li>
+        </ul>
+      </div>
+    </div>
+    <div class="hint">KLIK &rarr; UNTUK MENAMPILKAN</div>
+    <div class="foot">FIN CREATIVE<em>[CREATIVITY IS OUR HEARTBEAT]</em></div>
+  </section>
+
+  <!-- 7. SELECTED PROJECT -->
+  <section class="slide dark divider" data-title="Projects" data-dark="1">
+    <h1>Selected<br>Project</h1>
+    <div class="arr">&#8600;</div>
+  </section>
+
+  <!-- 8+. PROJECT SLIDES -->
+  <script type="text/template" id="projects-data">
+[{"cat": "INTERIOR DESIGN", "name": "KITCHEN SET", "size": "[4.7m x 2.6m x H 2.8m]", "type": "DESIGN", "main": "photos/project-01-kitchen-1-main.jpg", "thumbs": ["photos/project-01-kitchen-1-1.jpg", "photos/project-01-kitchen-1-2.jpg", "photos/project-01-kitchen-1-3.jpg"]}, {"cat": "INTERIOR DESIGN", "name": "KITCHEN SET", "size": "[3.4m x 2.4m x H 2.9m]", "type": "DESIGN", "main": "photos/project-02-kitchen-2-main.jpg", "thumbs": ["photos/project-02-kitchen-2-1.jpg", "photos/project-02-kitchen-2-2.jpg", "photos/project-02-kitchen-2-3.jpg"]}, {"cat": "INTERIOR DESIGN", "name": "KITCHEN SET", "size": "[2m x 1.5m x H 3m]", "type": "DESIGN & BUILD", "main": "photos/project-03-kitchen-3-main.jpg", "thumbs": ["photos/project-03-kitchen-3-1.jpg", "photos/project-03-kitchen-3-2.jpg", "photos/project-03-kitchen-3-3.jpg"]}, {"cat": "INTERIOR DESIGN", "name": "KITCHEN SET", "size": "[4m x 2.2m x H 3m]", "type": "DESIGN & BUILD", "main": "photos/project-04-kitchen-4-main.jpg", "thumbs": ["photos/project-04-kitchen-4-1.jpg", "photos/project-04-kitchen-4-2.jpg", "photos/project-04-kitchen-4-3.jpg"]}, {"cat": "INTERIOR DESIGN", "name": "OFFICE INTERIOR", "size": "[8.4m x 8.4m x H 3.4m]", "type": "DESIGN & BUILD", "main": "photos/project-05-office-main.jpg", "thumbs": ["photos/project-05-office-1.jpg", "photos/project-05-office-2.jpg", "photos/project-05-office-3.jpg"]}, {"cat": "EVENT BOOTH", "name": "BOOTH by DUREX", "size": "[1500x1500mm]", "type": "DESIGN & BUILD", "main": "photos/project-06-durex-booth-main.jpg", "thumbs": ["photos/project-06-durex-booth-1.jpg", "photos/project-06-durex-booth-2.jpg", "photos/project-06-durex-booth-3.jpg"]}, {"cat": "EVENT GATHERING", "name": "TIKTOK AFFILIATE by GARNIER", "size": "[12.9m x 27.1m x H 2.9m]", "type": "DESIGN & BUILD", "main": "photos/project-07-garnier-main.jpg", "thumbs": ["photos/project-07-garnier-1.jpg", "photos/project-07-garnier-2.jpg", "photos/project-07-garnier-3.jpg"]}, {"cat": "EVENT GATHERING", "name": "PANORAMA PRODUCT LAUNCHING by L'OREAL", "size": "[42m x 24m]", "type": "DESIGN & BUILD", "main": "photos/project-08-loreal-panorama-main.jpg", "thumbs": ["photos/project-08-loreal-panorama-1.jpg", "photos/project-08-loreal-panorama-2.jpg", "photos/project-08-loreal-panorama-3.jpg"]}, {"cat": "EVENT CONFERENCE", "name": "DBS ASIAN INSIGHTS by DBS", "size": "[12.6m x 5.4m x H 5.5m]", "type": "DESIGN & BUILD", "main": "photos/project-09-dbs-main.jpg", "thumbs": ["photos/project-09-dbs-1.jpg", "photos/project-09-dbs-2.jpg", "photos/project-09-dbs-3.jpg"]}, {"cat": "EVENT BOOTH", "name": "PT SHA SOLO BOOTH", "size": "[500cm x 500cm x 244cm]", "type": "DESIGN & BUILD", "main": "photos/project-10-sha-solo-booth-main.jpg", "thumbs": ["photos/project-10-sha-solo-booth-1.jpg", "photos/project-10-sha-solo-booth-2.jpg", "photos/project-10-sha-solo-booth-3.jpg"]}, {"cat": "PRODUCT DISPLAY", "name": "SUPERPELL PRODUCT DISPLAY", "size": "[90cm x 60cm x H 140cm]", "type": "DESIGN & BUILD", "main": "photos/project-11-superpell-display-main.jpg", "thumbs": ["photos/project-11-superpell-display-1.jpg", "photos/project-11-superpell-display-2.jpg", "photos/project-11-superpell-display-3.jpg"]}, {"cat": "PRODUCT COC", "name": "STREPSILS PRODUCT COC", "size": "", "type": "DESIGN & BUILD", "grid": true, "main": "photos/project-12-strepsils-main.jpg"}, {"cat": "MERCHANDISE", "name": "SUPERPELL MERCHANDISE", "size": "", "type": "DESIGN & PRODUCTION", "grid": true, "main": "photos/project-13-superpell-merch-main.jpg"}, {"cat": "PR PACKAGE", "name": "L'OREAL INFALLIBLE MATTE PR PACKAGE", "size": "", "type": "DESIGN & PRODUCTION", "main": "photos/project-14-loreal-pr-package-main.jpg", "thumbs": ["photos/project-14-loreal-pr-package-1.jpg", "photos/project-14-loreal-pr-package-2.jpg", "photos/project-14-loreal-pr-package-3.jpg"]}]
+  </script>
+
+  <!-- LAST: CONTACT -->
+  <section class="slide fullimg" data-title="Contact" data-dark="1" id="contact-slide" style="background-image:url(photos/contact.jpg)">
+    <a class="hot" style="top:68.5%;height:7%" href="https://instagram.com/FinCreative_idn" target="_blank" aria-label="Instagram"></a>
+    <a class="hot" style="top:77%;height:7%" href="https://wa.me/6285121097330" target="_blank" aria-label="WhatsApp"></a>
+    <a class="hot" style="top:85.5%;height:7%" href="mailto:hello.fincreative@gmail.com" aria-label="Email"></a>
+  </section>
+</div>
+
+<script>
+
+/* ===== build project slides ===== */
+(function(){
+  const data=JSON.parse(document.getElementById('projects-data').textContent);
+  const contact=document.getElementById('contact-slide');
+  data.forEach(p=>{
+    const s=document.createElement('section');
+    s.className='slide light project';
+    s.dataset.title='Projects';
+    s.dataset.group='project';
+    s.innerHTML=`
+      <div class="proj-grid">
+        <div class="proj-main ${p.grid?'span':''}"><img src="${p.main}" alt="${p.name}"></div>
+        <div class="proj-info">
+          <small>${p.cat}</small>
+          <h2>${p.name}</h2>
+          <div class="size">${p.size}</div>
+          <small>CATEGORY:</small>
+          <h2 style="margin:0">${p.type}</h2>
+        </div>
+        ${p.grid?'':`<div class="proj-thumbs">${p.thumbs.map(t=>`<div><img src="${t}" alt=""></div>`).join('')}</div>`}
+        <div class="attention">ATTENTION !<br>This 3D Image is artist impression only!! Client should not claim any end-result constructions based on 3D Images</div>
+      </div>`;
+    contact.parentNode.insertBefore(s,contact);
+  });
+})();
+
+/* ===== slide engine ===== */
+const slides=[...document.querySelectorAll('.slide')];
+const menu=document.getElementById('menu');
+const prev=document.getElementById('prev'), next=document.getElementById('next');
+const counter=document.getElementById('counter'), progress=document.getElementById('progress');
+let cur=0;
+const stepState=new Map(); // slide -> jumlah item yang sudah muncul
+
+/* menu: satu tombol per judul unik */
+const seen={};
+slides.forEach((s,i)=>{
+  const t=s.dataset.title;
+  if(seen[t]!==undefined) return;
+  seen[t]=i;
+  const b=document.createElement('button');
+  b.textContent=t; b.dataset.idx=i;
+  b.onclick=e=>{e.stopPropagation();go(i)};
+  menu.appendChild(b);
+});
+
+function stepsOf(s){return parseInt(s.dataset.steps||0)}
+function applySteps(s){
+  const n=stepState.get(s)||0;
+  s.querySelectorAll('[data-step]').forEach(el=>{
+    el.classList.toggle('show', parseInt(el.dataset.step)<=n);
+  });
+}
+function go(i,fromEnd){
+  if(i<0||i>=slides.length) return;
+  slides[cur].classList.remove('active');
+  cur=i;
+  const s=slides[cur];
+  if(stepsOf(s)){ stepState.set(s, fromEnd?stepsOf(s):0); applySteps(s); }
+  s.classList.add('active');
+  document.body.classList.toggle('dark-slide', !!s.dataset.dark);
+  const title=s.dataset.title;
+  [...menu.children].forEach(b=>b.classList.toggle('active',b.textContent===title));
+  prev.disabled=cur===0; next.disabled=cur===slides.length-1;
+  counter.textContent=String(cur+1).padStart(2,'0')+' / '+String(slides.length).padStart(2,'0');
+  progress.style.width=((cur+1)/slides.length*100)+'%';
+}
+function forward(){
+  const s=slides[cur], n=stepState.get(s)||0, max=stepsOf(s);
+  if(max && n<max){ stepState.set(s,n+1); applySteps(s); }   // klik = munculkan item berikutnya
+  else go(cur+1);                                             // sudah penuh = lanjut slide
+}
+function back(){
+  const s=slides[cur], n=stepState.get(s)||0;
+  if(stepsOf(s) && n>0){ stepState.set(s,n-1); applySteps(s); }
+  else go(cur-1,true);
+}
+next.onclick=e=>{e.stopPropagation();forward()};
+prev.onclick=e=>{e.stopPropagation();back()};
+document.getElementById('stage').addEventListener('click',e=>{
+  if(e.target.closest('a')) return;
+  forward();
+});
+document.addEventListener('keydown',e=>{
+  if(['ArrowRight','ArrowDown',' ','PageDown','Enter'].includes(e.key)){e.preventDefault();forward()}
+  if(['ArrowLeft','ArrowUp','PageUp','Backspace'].includes(e.key)){e.preventDefault();back()}
+  if(e.key==='Home')go(0);
+  if(e.key==='End')go(slides.length-1);
+});
+/* swipe untuk HP */
+let x0=null;
+document.addEventListener('touchstart',e=>x0=e.touches[0].clientX,{passive:true});
+document.addEventListener('touchend',e=>{
+  if(x0===null)return; const dx=e.changedTouches[0].clientX-x0;
+  if(Math.abs(dx)>60){dx<0?forward():back()} x0=null;
+});
+go(0);
+</script>
+</body>
+</html>
